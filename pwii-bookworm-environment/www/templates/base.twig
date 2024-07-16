@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" data-cy="html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title data-cy="title">{% block title %}{% endblock %}</title>
+    {% block head %}
+    <link rel="stylesheet" href="{{ full_url_for('home') }}assets/css/styles.css" data-cy="stylesheet-link"/>
+    {% endblock %}
+</head>
+<body data-cy="body">
+    <header>
+        <h1>Bookworm</h1>
+    </header>
+
+    <nav>
+        <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/catalogue">Catalogue</a></li>
+                <li><a href="/forums">Forums</a></li>
+                <li><a href="/sign-out">Sign Out</a></li>
+        </ul>
+    </nav>
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+</body>
+</html>

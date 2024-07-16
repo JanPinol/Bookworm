@@ -1,0 +1,115 @@
+{% block head %}
+    <link rel="stylesheet" href="{{ base_url }}assets/css/styles.css?v=1">
+
+    <style>
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        nav {
+            background-color: #f8f9fa;
+            padding: 1rem 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 1rem;
+        }
+
+        nav ul li a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom 0.3s ease-in-out;
+        }
+
+        nav ul li a:hover {
+            border-bottom: 2px solid #007bff;
+        }
+
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .features {
+            margin-top: 2rem;
+        }
+
+        .features h2 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .features ul {
+            list-style-type: disc;
+            margin-left: 2rem;
+            padding-left: 0;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .li-no-style {
+            list-style: none;
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>Bookworm</h1>
+    </header>
+
+    <nav>
+        <ul>
+            {% if authenticated %}
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/catalogue">Catalogue</a></li>
+                <li><a href="/forums">Forums</a></li>
+                <li><a href="/sign-out">Sign Out</a></li>
+            {% else %}
+                <li><a href="/sign-in">Sign In</a></li>
+                <li><a href="/sign-up">Sign Up</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <main>
+        <section class="features">
+        <h1>Welcome to Bookworm</h1>
+        <p>You will experience a web application for book lovers to share and discuss their favorite books.</p>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Bookworm Project</p>
+    </footer>
+{% endblock %}

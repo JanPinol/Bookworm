@@ -1,0 +1,23 @@
+{    "name": "project/bookworm",
+    "description": "PWII Final Project - Bookworm",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Project\\Bookworm\\": "src/"
+        }
+    },
+    "require": {
+        "ext-pdo": "*",
+        "slim/slim": "4.10.0",
+        "slim/psr7": "1.5",
+        "slim/twig-view": "3.3",
+        "nelexa/zip": "^4.0",
+        "slim/flash": "^0.4.0",
+        "symfony/dotenv": "^7.0",
+        "php-di/php-di": "^7.0",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.8"
+    }
+
+    
+}

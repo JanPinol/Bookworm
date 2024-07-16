@@ -1,0 +1,133 @@
+{% extends 'base.twig' %}
+
+{% block title %}Catalogue{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ base_url }}assets/css/buttons/hover-button.css?v=1">
+    <link rel="stylesheet" href="{{ base_url }}assets/css/header-footer.css?v=1">
+    <link rel="stylesheet" href="{{ base_url }}assets/css/books.css?v=1">
+
+    <style>
+        nav {
+            background-color: #f8f9fa;
+            padding: 1rem 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 1rem;
+        }
+
+        nav ul li a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom 0.3s ease-in-out;
+        }
+
+        nav ul li a:hover {
+            border-bottom: 2px solid #007bff;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 20px auto;
+        }
+
+        .container-form-books {
+            width: 40%;
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #f8f8f8;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        button {
+            width: calc(100% - 20px);
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .title-list-books {
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <main class="container">
+        <section class="container-list-books">
+            <h2 class="title-list-books">List of Books</h2>
+            <ul class="book-list">
+                {% for book in books %}
+                    <li><a href="/catalogue/{{ book.id }}">{{ book.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </section>
+        <section class="container-form-books">
+            <form action="{{ handleFormBook }}" method="POST" accept-charset="utf-8">
+                <h2>Save Book</h2>
+
+                <input type="text" name="title" placeholder="Title" value="{{ formData.title }}">
+                <input type="text" name="author" placeholder="Author" value="{{ formData.author }}">
+                <input type="text" name="description" placeholder="Description" value="{{ formData.description }}">
+                <input type="number" name="page_number" placeholder="Number of Pages" value="{{ formData.page_number }}">
+                <input type="text" name="cover_image" placeholder="Cover Image URL (optional)" value="{{ formData.cover_image }}">
+
+                <h2>Import ISBN</h2>
+                <input type="text" name="isbn" placeholder="Enter ISBN to Import" value="{{ formData.isbn }}">
+
+                <button type="submit" class="hover-button" name="action" value="save">Save</button>
+
+                {% if errors %}
+                    <div class="error">
+                        {% for error in errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if errorsIsbn %}
+                    <div class="error">
+                        {% for error in errorsIsbn %}
+                            {{ error }}<br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Bookworm Project</p>
+    </footer>
+
+{% endblock %}

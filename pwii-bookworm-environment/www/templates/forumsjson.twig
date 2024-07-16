@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forums</title>
+<script>
+    window.onload = function () {
+        // Get the existing forums
+        fetch('/api/forums')
+            .then(response => response.json())
+            .then(forums => {
+                const list = document.getElementById('forums-list');
+                forums.forEach(forum => {
+                    const item = document.createElement('div');
+                    item.textContent = forum.title;
+                    list.appendChild(item);
+                });
+            });
+
+        // Handle the form submission
+        document.getElementById('new-forum-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            fetch('/api/forums', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, description })
+            })
+            .then(response => response.json())
+            .then(forum => {
+                // Update the DOM with the new forum
+                const list = document.getElementById('forums-list');
+                const item = document.createElement('div');
+                item.textContent = forum.title;
+                list.appendChild(item);
+            });
+        });
+    };
+</script>
+</head>
+<body>
+    <h1>Forums</h1>
+    <div id="forums-list"></div>
+    <form id="new-forum-form">
+        <input type="text" id="title" placeholder="Title">
+        <textarea id="description" placeholder="Description"></textarea>
+        <button type="submit">Create</button>
+    </form>
+</body>
+</html>

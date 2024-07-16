@@ -1,0 +1,206 @@
+{% extends 'base.twig' %}
+
+{% block title %}Bookworm - Profile{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ base_url }}assets/css/buttons/hover-button.css?v=1">
+    <style>
+        nav {
+            background-color: #f8f9fa;
+            padding: 1rem 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 1rem;
+        }
+
+        nav ul li a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom 0.3s ease-in-out;
+        }
+
+        nav ul li a:hover {
+            border-bottom: 2px solid #007bff;
+        }
+
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .profile-info {
+            margin-top: 2rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .profile-info label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info input[type="text"],
+        .profile-info input[type="email"],
+        .profile-info input[type="password"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .profile-info button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+        }
+
+        .error {
+            color: red;
+            margin-top: 0.5rem;
+        }
+
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.5rem 0;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header:hover {
+            background-color: #0056b3;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0;
+            letter-spacing: 2px;
+            display: inline-block;
+            text-decoration: none;
+            cursor: default;
+            color: #f8f8f8;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .container-forms {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .forms-container {
+            width: 40%;
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            text-align: center;
+        }
+
+        .file-upload {
+            padding: 20px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <main>
+        <div class="container-forms">
+            <div class="forms-container">
+                <div class="profile-info">
+                    <h2>Hello, {{ user.email }}!</h2>
+                    <img class="profile-picture" src="/uploads/{{ user.profile_picture }}" alt="Profile Picture">
+                    <div id="profile-info">
+                        <p>Email {{ user.email }}</p>
+                        <p>Username {{ user.username }}</p>
+                        <button id="edit-profile-btn" class="hover-button">Edit Profile</button>
+                    </div>
+
+                    <div id="edit-profile-form" style="display: none;">
+                        <form action="/profile" method="post" enctype="multipart/form-data" data-cy="profile">
+                            <label for="email">Email</label>
+                            <input  data-cy="profile__email" type="email" id="email" name="email" value="{{ user.email }}">
+
+                            <label for="username">Username</label>
+                            <input  data-cy="profile__username" type="text" id="username" name="username" value="{{ user.username }}" required>
+
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password">
+
+                            <label for="profile-picture">Profile Picture</label>
+                            <input  data-cy="profile__picture" type="file" id="profile-picture" name="profile-picture" class="file-upload">
+
+                            {% if errors %}
+                                <div class="error">
+                                    {% for error in errors %}
+                                        {{ error }}<br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <button  data-cy="profile__btn" type="submit" class="hover-button">Update Profile</button>
+                            <button type="button" id="cancel-edit-btn" class="hover-button">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Bookworm Project</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const profileInfo = document.getElementById('profile-info');
+            const editProfileForm = document.getElementById('edit-profile-form');
+            const editProfileBtn = document.getElementById('edit-profile-btn');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+            editProfileBtn.addEventListener('click', function () {
+                profileInfo.style.display = 'none';
+                editProfileForm.style.display = 'block';
+            });
+
+            cancelEditBtn.addEventListener('click', function () {
+                profileInfo.style.display = 'block';
+                editProfileForm.style.display = 'none';
+            });
+        });
+    </script>
+{% endblock %}

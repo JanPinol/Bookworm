@@ -1,0 +1,236 @@
+{% extends 'base.twig' %}
+
+{% block title %}
+{{ book.title }} - Book Details
+{% endblock %}
+
+{% block head %}
+{{ parent() }}
+<link rel="stylesheet" href="{{ base_url }}assets/css/buttons/rating-button.css?v=1">
+<link rel="stylesheet" href="{{ base_url }}assets/css/buttons/hover-button.css?v=1">
+<link rel="stylesheet" href="{{ base_url }}assets/css/header-footer.css?v=1">
+<link rel="stylesheet" href="{{ base_url }}assets/css/books.css?v=1">
+<style>
+    nav {
+        background-color: #f8f9fa;
+        padding: 1rem 0;
+    }
+
+    nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    nav ul li {
+        display: inline;
+        margin-right: 1rem;
+    }
+
+    nav ul li a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+        border-bottom: 2px solid transparent;
+        transition: border-bottom 0.3s ease-in-out;
+    }
+
+    nav ul li a:hover {
+        border-bottom: 2px solid #007bff;
+    }
+    .reviews-container {
+        text-align: left;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f8f8f8;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    textarea {
+        width: 100%;
+        resize: none;
+        margin-bottom: 2%;
+        margin-top: 2%;
+    }
+
+    .review-item {
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .review-item .rating {
+        display: flex;
+        align-items: center;
+    }
+
+    .review-item .rating svg {
+        width: 20px;
+        height: 20px;
+        fill: gold;
+        margin-right: 5px;
+    }
+
+    .delete-button {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="book-details-container">
+    <section class="book-details-image">
+        {% if book.cover_image %}
+        <img src="{{ book.cover_image }}" alt="Book Cover">
+        {% endif %}
+    </section>
+    <section class="book-details-text">
+        <h1>{{ book.title }}</h1>
+        <p><strong>Author:</strong> {{ book.author }}</p>
+        <p><strong>Description:</strong> {{ book.description }}</p>
+        <p><strong>Page Count:</strong> {{ book.page_number }}</p>
+    </section>
+</section>
+
+<section class="reviews-container">
+    <form id="reviewForm" action="javascript:void(0);" method="POST">
+        <div class="rating">
+            {% for i in 5..1 %}
+            <input type="radio" id="star-{{ i }}" name="rating" value="{{ i }}">
+            <label for="star-{{ i }}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"></path>
+                </svg>
+            </label>
+            {% endfor %}
+        </div>
+        <textarea name="review_text" rows="4" cols="50" placeholder="Write your review here..." maxlength="500"></textarea>
+        <div id="error-message" style="color: red; display: none; margin-bottom: 3%;"></div>
+        <button type="submit" class="hover-button">Submit review</button>
+    </form>
+</section>
+
+
+<section class="reviews-container">
+    <h2>Reviews</h2>
+    {% if reviewsWithRatings is not empty %}
+        {% for reviewWithRating in reviewsWithRatings %}
+            <div class="review-item">
+                <div class="rating">
+                    {% for i in 1..reviewWithRating.getRating() %}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"></path>
+                        </svg>
+                    {% endfor %}
+                </div>
+                <p>{{ reviewWithRating.getReviewText() }}</p>
+                {% if reviewWithRating.isUserReview() %}
+                    <button class="delete-button" onclick="deleteReviewAndRating({{ book.id }}, {{ reviewWithRating.getId() }})">Delete my review</button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No reviews yet. Be the first to write one!</p>
+    {% endif %}
+</section>
+
+<footer>
+    <p>&copy; 2024 Bookworm Project</p>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.getElementById('reviewForm');
+    reviewForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const rating = formData.get('rating');
+        const reviewText = formData.get('review_text');
+        const bookId = {{ book.id }};
+
+        fetch(`/catalogue/${bookId}/rate`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ rating: rating })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.error) {
+                throw new Error(result.error);
+            } else {
+                return fetch(`/catalogue/${bookId}/review`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ review_text: reviewText })
+                });
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.error) {
+                throw new Error(result.error);
+            } else {
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error during submission:', error);
+            document.getElementById('error-message').textContent = error.message;
+            document.getElementById('error-message').style.display = 'block';
+        });
+    });
+
+    window.deleteReviewAndRating = function(bookId) {
+        fetch(`/catalogue/${bookId}/review`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to delete review');
+            }
+            return response.json();
+        })
+        .then(reviewResult => {
+            return fetch(`/catalogue/${bookId}/rate`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        })
+        .then(ratingResponse => {
+            if (!ratingResponse.ok) {
+                throw new Error('Failed to delete rating');
+            }
+            return ratingResponse.json();
+        })
+        .then(ratingResult => {
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error during operation:', error);
+        });
+    };
+});
+</script>
+{% endblock %}
